@@ -31,28 +31,33 @@ export const ServersConfig:any = [
         server_features_and_capability:`STRUCTURED_METADATA`,
         path : "start-server.js"
     },
-    {
-        server_name :"ELEVENLABS",
-        server_features_and_capability:`ELEVENLABS`,
-        command: "python",
-        args: [
-            "../../python/servers/ELEVENLABS/start-server.py"
-        ]
-    },
-    {
-        server_name :"META_PROMPT",
-        server_features_and_capability:`META_PROMPT`,
-        command: "uv",
-        args: [
-            "--directory",
-            "../../python/servers/META_PROMPT/meta-prompt-mcp-server",
-            "run",
-            "mcp-meta-prompt"
-        ]
-    },
+    // {
+    //     server_name :"ELEVENLABS",
+    //     server_features_and_capability:`ELEVENLABS`,
+    //     command: "python",
+    //     args: [
+    //         "../../python/servers/ELEVENLABS/start-server.py"
+    //     ]
+    // },
+    // {
+    //     server_name :"META_PROMPT",
+    //     server_features_and_capability:`META_PROMPT`,
+    //     command: "uv",
+    //     args: [
+    //         "--directory",
+    //         "../../python/servers/META_PROMPT/meta-prompt-mcp-server",
+    //         "run",
+    //         "mcp-meta-prompt"
+    //     ]
+    // },
     {
         server_name :"HBASE",
         server_features_and_capability:`HBASE`,
+        path : "start-server.js"
+    },
+    {
+        server_name :"BROWSERBASE",
+        server_features_and_capability:`BROWSERBASE`,
         path : "start-server.js"
     },
     // {

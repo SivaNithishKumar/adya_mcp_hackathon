@@ -943,6 +943,12 @@ async function CallAndExecuteTool(selected_server:any, server_credentials:any,to
                 port: server_credentials[selected_server]?.port || 8080
             };
             break;
+        case "BROWSERBASE":
+            args["__credentials__"] = {
+                "browserbaseApiKey": server_credentials[selected_server]?.browserbaseApiKey || "",
+                "browserbaseProjectId": server_credentials[selected_server]?.browserbaseProjectId || ""
+            };
+            break;
         default:
             break;
     }
