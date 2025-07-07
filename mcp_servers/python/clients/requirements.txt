@@ -1,9 +1,24 @@
 quart
 aiohttp==3.9.3
-python-dotenv==1.0.0
-mcp
-pandas
-openpyxl  
-requests                        
-asyncio
-uv
+python-dotenv==1.0.1
+mcp==1.10.1
+pandas==2.3.0
+openpyxl==3.1.5
+requests==2.32.4
+asyncio==3.4.3
+uv==0.7.19
+
+# ElevenLabs MCP Server dependencies
+elevenlabs==2.6.0
+fastapi==0.109.2
+uvicorn==0.27.1
+httpx==0.28.1
+fuzzywuzzy==0.18.0
+python-Levenshtein==0.27.1
+sounddevice==0.5.1
+soundfile==0.13.1
+
+# Additional dependencies
+pydantic==2.11.7
+starlette==0.36.3
+python-multipart==0.0.20

@@ -48,7 +48,6 @@ async def initialize_all_mcp(exit_stack):
             session = await exit_stack.enter_async_context(ClientSession(stdio, write))
             await session.initialize()
 
-
             # Save session globally
             MCPServers[server["server_name"]] = session
 
