@@ -13,5 +13,22 @@ ServersConfig = [
 			"run",
 			"mcp-gsuite"
 		]
-	}
+	},
+    {
+        "server_name": "ELEVENLABS",
+        "command": "python",
+        "args": [
+            "../servers/ELEVENLABS/start-server.py"
+        ]
+    },
+    {
+        "server_name": "META_PROMPT",
+        "command": "uv",
+        "args": [
+            "--directory",
+            "../servers/META_PROMPT/meta-prompt-mcp-server",
+            "run",
+            "mcp-meta-prompt"
+        ]
+    }
 ]

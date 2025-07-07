@@ -909,6 +909,10 @@ async def call_and_execute_tool(
         case "MCP-GSUITE":
             args["__credentials__"]   = creds
             args["server_credentials"] = creds
+        case "ELEVENLABS":
+            args["credentials"] = {
+                "apiKey": creds.get("apiKey", "")
+            }
         case "FACEBOOK_MCP":
             args["__credentials__"]   = creds
             args["server_credentials"] = creds
