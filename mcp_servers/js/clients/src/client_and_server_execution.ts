@@ -937,6 +937,12 @@ async function CallAndExecuteTool(selected_server:any, server_credentials:any,to
                 "appSecret": server_credentials[selected_server]?.appSecret || "",
             }
             break;
+        case "HBASE":
+            args["__credentials__"] = {
+                url: server_credentials[selected_server]?.url || "http://localhost",
+                port: server_credentials[selected_server]?.port || 8080
+            };
+            break;
         default:
             break;
     }

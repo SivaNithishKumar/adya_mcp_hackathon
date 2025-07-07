@@ -1,0 +1,1 @@
+// Types for HBase MCP server (to be expanded) 

@@ -1,0 +1,19 @@
+{
+  "name": "@adya/hbase-mcp-server",
+  "version": "0.1.0",
+  "author": "Adya Hackathon Team",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node start-server.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.15.0",
+    "@types/node": "^24.0.10",
+    "node-fetch": "^3.3.2",
+    "ts-node": "^10.9.2"
+  }
+}

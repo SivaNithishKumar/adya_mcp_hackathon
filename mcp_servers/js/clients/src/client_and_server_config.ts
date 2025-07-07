@@ -50,6 +50,11 @@ export const ServersConfig:any = [
             "mcp-meta-prompt"
         ]
     },
+    {
+        server_name :"HBASE",
+        server_features_and_capability:`HBASE`,
+        path : "start-server.js"
+    },
     // {
     //     server_name :"WORDPRESS",
     //     server_features_and_capability:`WORDPRESS`,
