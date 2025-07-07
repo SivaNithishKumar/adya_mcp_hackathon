@@ -921,6 +921,11 @@ async function CallAndExecuteTool(selected_server:any, server_credentials:any,to
                 "domain": shopifyCreds.domain || "",
             }
             break;
+        case "ELEVENLABS":
+            args["credentials"] = {
+                "apiKey": server_credentials[selected_server]?.apiKey || "",
+            }
+            break;
         case "LINKEDIN":
             args.accessToken = server_credentials[selected_server]?.access_token || "";
             break;

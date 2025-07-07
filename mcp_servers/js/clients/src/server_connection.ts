@@ -28,8 +28,8 @@ export async function initializeAlllMCP() {
                     version: "1.0.0"
                 });
                 const transport = new StdioClientTransport({
-                    command: "node",
-                    args: [`${process.cwd()}/../servers/${server.server_name}/${server.path}`]
+                    command: (server as any).command || "node",
+                    args: (server as any).args || [`${process.cwd()}/../servers/${server.server_name}/${server.path}`]
                 });
 
                 await newClient.connect(transport).then(() => {
