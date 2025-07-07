@@ -18,7 +18,7 @@ ServersConfig = [
         "server_name": "ELEVENLABS",
         "command": "python",
         "args": [
-            "../servers/ELEVENLABS/start-server.py"
+            "../servers/ELEVENLABS/elevenlabs_mcp/server.py"
         ]
     },
     {
