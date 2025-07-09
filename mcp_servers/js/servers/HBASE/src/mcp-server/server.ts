@@ -1,4 +1,4 @@
-// MCP server logic for HBase (full tool registration)
+// MCP server logic for HBase (working tools only)
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { HBaseCoreClient } from "../core.js";
@@ -16,11 +16,7 @@ import { getRowTool } from "../funcs/getRow.js";
 import { putRowTool } from "../funcs/putRow.js";
 import { deleteRowTool } from "../funcs/deleteRow.js";
 import { getCellTool } from "../funcs/getCell.js";
-import { putCellTool } from "../funcs/putCell.js";
 import { bulkPutRowsTool } from "../funcs/bulkPutRows.js";
-import { scanTableTool } from "../funcs/scanTable.js";
-import { splitRegionTool } from "../funcs/splitRegion.js";
-import { compactRegionTool } from "../funcs/compactRegion.js";
 
 const credentialsSchema = z.object({
   url: z.string().url(),
@@ -32,134 +28,106 @@ export function registerHBaseTools(server: McpServer) {
 
   server.tool(
     "healthCheck",
-    "Check the health/status of the HBase REST API server.",
+    "Check HBase cluster health and version. Returns cluster information and version details.",
     { __credentials__: credentialsSchema },
     async (args: any) => healthCheckTool(client, args)
   );
 
   server.tool(
     "listNamespaces",
-    "List all namespaces in HBase.",
+    "List all namespaces in HBase cluster. Returns array of namespace names.",
     { __credentials__: credentialsSchema },
     async (args: any) => listNamespacesTool(client, args)
   );
 
   server.tool(
     "getNamespace",
-    "Get details of a specific namespace in HBase.",
+    "Get details of a specific namespace. Returns namespace information and properties.",
     { __credentials__: credentialsSchema, namespace: z.string() },
     async (args: any) => getNamespaceTool(client, args)
   );
 
   server.tool(
     "createNamespace",
-    "Create a new namespace in HBase.",
-    { __credentials__: credentialsSchema, namespace: z.string(), data: z.record(z.any()) },
+    "Create a new namespace in HBase. Requires namespace name and optional properties object.",
+    { __credentials__: credentialsSchema, namespace: z.string(), data: z.record(z.any()).optional() },
     async (args: any) => createNamespaceTool(client, args)
   );
 
   server.tool(
     "deleteNamespace",
-    "Delete a namespace in HBase.",
+    "Delete a namespace in HBase. Removes the namespace and all its tables.",
     { __credentials__: credentialsSchema, namespace: z.string() },
     async (args: any) => deleteNamespaceTool(client, args)
   );
 
   server.tool(
     "listTables",
-    "List all tables in HBase.",
+    "List all tables in HBase cluster. Returns array of table names from root endpoint.",
     { __credentials__: credentialsSchema },
     async (args: any) => listTablesTool(client, args)
   );
 
   server.tool(
     "getTableSchema",
-    "Get the schema of a specific table in HBase.",
+    "Get schema information for a specific table. Returns table structure and column families.",
     { __credentials__: credentialsSchema, table: z.string() },
     async (args: any) => getTableSchemaTool(client, args)
   );
 
   server.tool(
     "createOrUpdateTable",
-    "Create or update a table in HBase.",
+    "Create or update a table schema. Requires table name and schema object with 'name' and 'ColumnSchema' array. Example: {name: 'table', ColumnSchema: [{name: 'cf'}]}",
     { __credentials__: credentialsSchema, table: z.string(), schema: z.record(z.any()) },
     async (args: any) => createOrUpdateTableTool(client, args)
   );
 
   server.tool(
     "deleteTable",
-    "Delete a table in HBase.",
+    "Delete a table in HBase. Removes the table and all its data.",
     { __credentials__: credentialsSchema, table: z.string() },
     async (args: any) => deleteTableTool(client, args)
   );
 
   server.tool(
     "listTableRegions",
-    "List all regions of a specific table in HBase.",
+    "List all regions for a specific table. Returns region information and distribution.",
     { __credentials__: credentialsSchema, table: z.string() },
     async (args: any) => listTableRegionsTool(client, args)
   );
 
   server.tool(
     "getRow",
-    "Get a specific row from a table in HBase.",
+    "Retrieve a row by key from a table. Returns row data with all cells.",
     { __credentials__: credentialsSchema, table: z.string(), row: z.string() },
     async (args: any) => getRowTool(client, args)
   );
 
   server.tool(
     "putRow",
-    "Insert or update a row in a table in HBase.",
+    "Insert or update a row in a table. Requires table, row key, and data object with Row array containing key (base64) and Cell array with column (base64) and value (base64).",
     { __credentials__: credentialsSchema, table: z.string(), row: z.string(), data: z.record(z.any()) },
     async (args: any) => putRowTool(client, args)
   );
 
   server.tool(
     "deleteRow",
-    "Delete a specific row from a table in HBase.",
+    "Delete a specific row from a table. Removes the row and all its cells.",
     { __credentials__: credentialsSchema, table: z.string(), row: z.string() },
     async (args: any) => deleteRowTool(client, args)
   );
 
   server.tool(
     "getCell",
-    "Get a specific cell value from a row in a table in HBase.",
+    "Get the value of a specific cell (row+column) in a table. Returns cell value and metadata.",
     { __credentials__: credentialsSchema, table: z.string(), row: z.string(), column: z.string() },
     async (args: any) => getCellTool(client, args)
   );
 
   server.tool(
-    "putCell",
-    "Insert or update a cell value in a row in a table in HBase.",
-    { __credentials__: credentialsSchema, table: z.string(), row: z.string(), column: z.string(), value: z.any() },
-    async (args: any) => putCellTool(client, args)
-  );
-
-  server.tool(
     "bulkPutRows",
-    "Insert or update multiple rows in a table in HBase (bulk operation).",
+    "Bulk insert or update multiple rows in a table. Requires table name and rows array with Row objects containing key (base64) and Cell arrays.",
     { __credentials__: credentialsSchema, table: z.string(), rows: z.array(z.any()) },
     async (args: any) => bulkPutRowsTool(client, args)
-  );
-
-  server.tool(
-    "scanTable",
-    "Scan all rows in a table in HBase using a scanner.",
-    { __credentials__: credentialsSchema, table: z.string(), scanOptions: z.record(z.any()) },
-    async (args: any) => scanTableTool(client, args)
-  );
-
-  server.tool(
-    "splitRegion",
-    "Split a specific region of a table in HBase.",
-    { __credentials__: credentialsSchema, table: z.string(), region: z.string() },
-    async (args: any) => splitRegionTool(client, args)
-  );
-
-  server.tool(
-    "compactRegion",
-    "Compact a specific region of a table in HBase.",
-    { __credentials__: credentialsSchema, table: z.string(), region: z.string() },
-    async (args: any) => compactRegionTool(client, args)
   );
 } 

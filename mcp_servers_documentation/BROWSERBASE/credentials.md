@@ -41,11 +41,7 @@ The server also supports additional configuration options that can be passed via
   "BROWSERBASE": {
     "browserbaseApiKey": "bb_live_ZEJ_1iI-Bu-GvYpmiOvr2ytjHhU",
     "browserbaseProjectId": "7dffe5b6-fdef-4fd2-bb68-08a149277999",
-    "proxies": true,
-    "advancedStealth": false,
-    "browserWidth": 1920,
-    "browserHeight": 1080
-  }
+    
 }
 ```
 
@@ -71,3 +67,7 @@ The Browserbase MCP server follows the hackathon repo pattern with dynamic crede
 - No hardcoded credentials are stored in the server
 - Each tool call can use different credentials if needed
 - Fallback to environment variables if no credentials provided 
+
+## Creds Video
+
+https://drive.google.com/file/d/1Q93t27FQOsPCSWXSPLSGsS_9v-JAxAvw/view?usp=drive_link

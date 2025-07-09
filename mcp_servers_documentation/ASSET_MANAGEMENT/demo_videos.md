@@ -6,19 +6,4 @@ This document is a placeholder for demo and walkthrough videos showcasing the fe
 ---
 
 ## Demo Videos
-
-- **[Demo 1: Server Setup & Configuration](#)**
-  - Description: How to set up and configure the Asset Management MCP server in the Adya Hackathon repo.
-
-- **[Demo 2: Uploading and Listing Assets](#)**
-  - Description: Demonstration of uploading assets and listing them using the MCP tools.
-
-- **[Demo 3: Asset Metadata and Relations](#)**
-  - Description: Managing asset metadata and creating relations between assets.
-
-- **[Demo 4: Search and Analytics](#)**
-  - Description: Using search and analytics tools provided by the server.
-
----
-
-> Add links to recorded videos or screen captures as you create them. 
+https://drive.google.com/file/d/1iMVGcIo2hac6zulztvWUn01IeJnN0zEX/view?usp=drive_link

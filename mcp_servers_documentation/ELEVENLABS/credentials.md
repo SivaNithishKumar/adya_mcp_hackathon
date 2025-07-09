@@ -49,31 +49,6 @@ The client automatically adds the API key to every tool call as:
 }
 ```
 
-## Security Notes
 
-- **No Environment Variables**: The server does not read from `ELEVENLABS_API_KEY` environment variable
-- **Per-Call Injection**: Each tool call receives fresh credentials
-- **No Persistence**: API keys are not stored in the server process
-- **Key Rotation**: You can change the API key mid-session by updating your client configuration
-
-## Cost Considerations
-
-⚠️ **IMPORTANT**: ElevenLabs API calls may incur costs depending on your subscription plan:
-- Text-to-Speech: Based on character count
-- Speech-to-Text: Based on audio duration  
-- Voice Cloning: Per voice creation
-- Agent Calls: Per conversation
-
-Always review your ElevenLabs usage dashboard to monitor costs.
-
-## Troubleshooting
-
-### Common Issues
-1. **Invalid API Key**: Ensure the key starts with `sk_` and is correctly copied
-2. **Rate Limits**: Check your ElevenLabs subscription limits
-3. **Authentication Errors**: Verify the API key is active in your ElevenLabs dashboard
-
-### Error Messages
-- `"ElevenLabs API key missing"`: No API key provided in credentials
-- `"Invalid API key"`: The provided key is not valid
-- `"Rate limit exceeded"`: You've hit your ElevenLabs usage limits 
+## Video Link
+https://drive.google.com/file/d/1VXuhuRK0BnpIjpHoNw17lKWEcDZAKBEg/view?usp=drive_link

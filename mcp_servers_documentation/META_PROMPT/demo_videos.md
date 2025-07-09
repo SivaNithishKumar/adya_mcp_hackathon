@@ -2,4 +2,4 @@
 
 A short demo showcasing the Meta-Prompt MCP in action:
 
-[![Demo Video](../../../../meta-prompt-mcp-server/public/demo.png)](https://youtu.be/KATOgaj2upI) 
+https://drive.google.com/file/d/1jQvOapD1JDE5Kt1CHjd0BVcCKCWnA7Nd/view?usp=drive_link

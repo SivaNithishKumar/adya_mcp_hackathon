@@ -1,4 +1,4 @@
-// HBase REST API core client (dynamic baseUrl)
+// HBase REST API core client (working endpoints only)
 
 export class HBaseCoreClient {
   // Remove baseUrl from constructor
@@ -22,8 +22,8 @@ export class HBaseCoreClient {
     return this._get(this._makeBaseUrl(url, port) + `/namespaces/${encodeURIComponent(namespace)}`);
   }
 
-  async createNamespace({ url, port, namespace, data }: { url: string; port: number; namespace: string; data: any }): Promise<any> {
-    return this._post(this._makeBaseUrl(url, port) + `/namespaces/${encodeURIComponent(namespace)}`, data);
+  async createNamespace({ url, port, namespace, data }: { url: string; port: number; namespace: string; data?: any }): Promise<any> {
+    return this._post(this._makeBaseUrl(url, port) + `/namespaces/${encodeURIComponent(namespace)}`, data || {});
   }
 
   async deleteNamespace({ url, port, namespace }: { url: string; port: number; namespace: string }): Promise<any> {
@@ -31,11 +31,12 @@ export class HBaseCoreClient {
   }
 
   async listTables({ url, port }: { url: string; port: number }): Promise<any> {
-    return this._get(this._makeBaseUrl(url, port) + `/tables`);
+    // Use root endpoint instead of /tables which doesn't work
+    return this._get(this._makeBaseUrl(url, port) + `/`);
   }
 
   async getTableSchema({ url, port, table }: { url: string; port: number; table: string }): Promise<any> {
-    return this._get(this._makeBaseUrl(url, port) + `/${encodeURIComponent(table)}`);
+    return this._get(this._makeBaseUrl(url, port) + `/${encodeURIComponent(table)}/schema`);
   }
 
   async createOrUpdateTable({ url, port, table, schema }: { url: string; port: number; table: string; schema: any }): Promise<any> {
@@ -66,36 +67,8 @@ export class HBaseCoreClient {
     return this._get(this._makeBaseUrl(url, port) + `/${encodeURIComponent(table)}/${encodeURIComponent(row)}/${encodeURIComponent(column)}`);
   }
 
-  async putCell({ url, port, table, row, column, value }: { url: string; port: number; table: string; row: string; column: string; value: any }): Promise<any> {
-    return this._put(this._makeBaseUrl(url, port) + `/${encodeURIComponent(table)}/${encodeURIComponent(row)}/${encodeURIComponent(column)}`, value);
-  }
-
   async bulkPutRows({ url, port, table, rows }: { url: string; port: number; table: string; rows: any[] }): Promise<any> {
     return this._post(this._makeBaseUrl(url, port) + `/${encodeURIComponent(table)}/row`, rows);
-  }
-
-  async scanTable({ url, port, table, scanOptions }: { url: string; port: number; table: string; scanOptions: any }): Promise<any> {
-    // 1. Create scanner
-    const scannerRes = await this._post(this._makeBaseUrl(url, port) + `/${encodeURIComponent(table)}/scanner`, scanOptions, {
-      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }
-    });
-    if (!scannerRes || !scannerRes.location) {
-      return { error: true, message: 'Failed to create scanner', details: scannerRes };
-    }
-    const scannerUrl = scannerRes.location;
-    // 2. Get rows
-    const rows = await this._getAbsolute(scannerUrl);
-    // 3. Delete scanner
-    await this._deleteAbsolute(scannerUrl);
-    return rows;
-  }
-
-  async splitRegion({ url, port, table, region }: { url: string; port: number; table: string; region: string }): Promise<any> {
-    return this._post(this._makeBaseUrl(url, port) + `/${encodeURIComponent(table)}/regions/${encodeURIComponent(region)}/split`, {});
-  }
-
-  async compactRegion({ url, port, table, region }: { url: string; port: number; table: string; region: string }): Promise<any> {
-    return this._post(this._makeBaseUrl(url, port) + `/${encodeURIComponent(table)}/regions/${encodeURIComponent(region)}/compact`, {});
   }
 
   // --- Internal helpers ---
@@ -121,7 +94,13 @@ export class HBaseCoreClient {
         return { location: res.headers.get('location') };
       }
       if (!res.ok) return { error: true, status: res.status, statusText: res.statusText };
-      return await res.json();
+      const text = await res.text();
+      if (!text) return { success: true, status: res.status };
+      try {
+        return JSON.parse(text);
+      } catch {
+        return { success: true, status: res.status, raw: text };
+      }
     } catch (err: any) {
       return { error: true, message: err.message || String(err) };
     }
@@ -135,7 +114,13 @@ export class HBaseCoreClient {
         body: JSON.stringify(data)
       });
       if (!res.ok) return { error: true, status: res.status, statusText: res.statusText };
-      return await res.json();
+      const text = await res.text();
+      if (!text) return { success: true, status: res.status };
+      try {
+        return JSON.parse(text);
+      } catch {
+        return { success: true, status: res.status, raw: text };
+      }
     } catch (err: any) {
       return { error: true, message: err.message || String(err) };
     }
@@ -145,26 +130,13 @@ export class HBaseCoreClient {
     try {
       const res = await fetch(path, { method: 'DELETE', headers: { 'Accept': 'application/json' } });
       if (!res.ok) return { error: true, status: res.status, statusText: res.statusText };
-      return { success: true };
-    } catch (err: any) {
-      return { error: true, message: err.message || String(err) };
-    }
-  }
-
-  // Absolute URL helpers for scanner
-  async _getAbsolute(url: string): Promise<any> {
-    try {
-      const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-      if (!res.ok) return { error: true, status: res.status, statusText: res.statusText };
-      return await res.json();
-    } catch (err: any) {
-      return { error: true, message: err.message || String(err) };
-    }
-  }
-  async _deleteAbsolute(url: string): Promise<any> {
-    try {
-      await fetch(url, { method: 'DELETE', headers: { 'Accept': 'application/json' } });
-      return { success: true };
+      const text = await res.text();
+      if (!text) return { success: true, status: res.status };
+      try {
+        return JSON.parse(text);
+      } catch {
+        return { success: true, status: res.status, raw: text };
+      }
     } catch (err: any) {
       return { error: true, message: err.message || String(err) };
     }

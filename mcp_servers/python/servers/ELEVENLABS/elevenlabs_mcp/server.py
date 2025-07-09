@@ -613,7 +613,6 @@ def list_agents(credentials: dict | None = None) -> TextContent:
     Returns:
         TextContent with a formatted list of available agents
     """
-    _apply_credentials(credentials)
     response = get_client(credentials).conversational_ai.agents.list()
 
     if not response.agents:

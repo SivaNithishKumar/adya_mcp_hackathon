@@ -115,9 +115,20 @@ export function createRegisterTool(
     }
 
     if (tool.args) {
-      // Add credentials parameter to all tools automatically
+      // Remove credential parameters from the original schema and add __credentials__
+      const originalArgs = { ...tool.args };
+      const credentialParams = ['apiKey', 'apiSecret', 'cloudName'];
+      
+      // Remove credential parameters from the schema
+      credentialParams.forEach(param => {
+        if (originalArgs[param]) {
+          delete originalArgs[param];
+        }
+      });
+      
+      // Add __credentials__ parameter
       const argsWithCredentials = {
-        ...tool.args,
+        ...originalArgs,
         __credentials__: z.object({
           cloudName: z.string().optional(),
           apiKey: z.string().optional(),
@@ -126,10 +137,19 @@ export function createRegisterTool(
       };
       
       server.tool(tool.name, tool.description, argsWithCredentials, async (args, ctx) => {
-        // Check for credentials in args and create new client if needed
+        // Extract credentials from __credentials__ and add them to args
+        let processedArgs: any = { ...args };
         let clientToUse = sdk;
+        
         if (args.__credentials__) {
           const { cloudName, apiKey, apiSecret } = args.__credentials__;
+          
+          // Add individual credential parameters to args for the tool function
+          if (apiKey) processedArgs.apiKey = apiKey;
+          if (apiSecret) processedArgs.apiSecret = apiSecret;
+          if (cloudName) processedArgs.cloudName = cloudName;
+          
+          // Also create new client if needed
           if (apiKey && apiSecret) {
             clientToUse = new CloudinaryAnalysisCore({
               security: {
@@ -138,8 +158,12 @@ export function createRegisterTool(
               cloudName: cloudName || sdk._options.cloudName
             });
           }
+          
+          // Remove __credentials__ from processed args to avoid passing it to the tool
+          delete processedArgs.__credentials__;
         }
-        return tool.tool(clientToUse, args, ctx);
+        
+        return tool.tool(clientToUse, processedArgs, ctx);
       });
     } else {
       server.tool(tool.name, tool.description, async (ctx) => {

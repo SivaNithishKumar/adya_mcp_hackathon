@@ -40,16 +40,49 @@ export async function ClientAndServerValidation(payload:any, streaming_callback:
             if(MCPServers[server]){
                 var resource:any = await MCPServers[server].listTools();       
                 for (var tool of resource.tools) {
+                    // Clone the tool input schema to avoid modifying the original
+                    let processedSchema = JSON.parse(JSON.stringify(tool.inputSchema || {
+                        type: "object",
+                        properties: {},
+                        required: []
+                    }));
+
+                    // Remove credential-related parameters from the schema for LLM
+                    // since the client will add them automatically via __credentials__
+                    if (processedSchema.properties) {
+                        // List of credential parameters to remove from LLM schema
+                        const credentialParams = [
+                            'apiKey', 'apiSecret', 'cloudName', 'api_token', 'user_email', 
+                            'base_url', 'siteUrl', 'username', 'password', 'account_id', 
+                            'client_id', 'client_secret', 'access_token', 'refresh_token',
+                            'app_key', 'app_secret', 'access_token_secret', 'notion_token',
+                            'slack_bot_token', 'slack_team_id', 'slack_channel_ids',
+                            'jira_email', 'jira_api_token', 'jira_domain', 'project_key',
+                            'email', 'token', 'subdomain', 'accessToken', 'businessAccountId',
+                            'appId', 'appSecret', 'url', 'port', 'browserbaseApiKey', 
+                            'browserbaseProjectId', 'figma_url', 'depth', 'domain'
+                        ];
+                        
+                        credentialParams.forEach(param => {
+                            if (processedSchema.properties[param]) {
+                                delete processedSchema.properties[param];
+                            }
+                        });
+
+                        // Also remove these from required array if present
+                        if (processedSchema.required && Array.isArray(processedSchema.required)) {
+                            processedSchema.required = processedSchema.required.filter(
+                                (req: string) => !credentialParams.includes(req)
+                            );
+                        }
+                    }
+
                     tools_arr.push({
                         type: "function",
                         function: {
                           name: tool.name,
                           description: tool.description || `Tool for ${tool.name}`,
-                          parameters: tool.inputSchema || {
-                            type: "object",
-                            properties: {},
-                            required: []
-                          }
+                          parameters: processedSchema
                         }
                       });    
                 }
@@ -57,8 +90,6 @@ export async function ClientAndServerValidation(payload:any, streaming_callback:
         }
         client_details["tools"] = tools_arr;
 
-
-        
         return {
             "payload": {
                 "selected_client": selected_client,
